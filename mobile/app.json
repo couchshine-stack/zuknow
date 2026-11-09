@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "zuknow.in",
+    "slug": "zuknow",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "in.zuknow.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#163A8C"
+      },
+      "package": "in.zuknow.app"
+    },
+    "plugins": ["expo-web-browser"]
+  }
+}

@@ -1,27 +1,48 @@
 {
-  "name": "zuknow-app",
-  "version": "0.1.0",
+  "name": "zuknow",
+  "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18.18.0"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "build": "node scripts/prisma.cjs generate && next build",
+    "start": "NODE_ENV=production node server.js",
+    "start:next": "next start",
+    "lint": "next lint",
+    "db:push": "node scripts/prisma.cjs db push",
+    "db:seed": "node scripts/prisma.cjs db seed",
+    "postinstall": "node scripts/prisma.cjs generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.1.6"
-  },
-  "devDependencies": {
-    "typescript": "^5",
+    "@prisma/client": "^6.19.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "jose": "^6.2.11",
+    "lucide-react": "^1.41.0",
+    "next": "^15.5.25",
     "postcss": "^8",
+    "prisma": "^6.19.3",
+    "razorpay": "^2.9.8",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.6.0",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.23.13",
+    "typescript": "^5",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/bcryptjs": "^2.4.6",
     "eslint": "^9",
-    "eslint-config-next": "15.1.6",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-next": "^15.5.25"
   }
 }

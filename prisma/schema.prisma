@@ -1,0 +1,195 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model User {
+  id        String    @id @default(cuid())
+  phone     String    @unique
+  name      String?
+  email     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  addresses Address[]
+  orders    Order[]
+}
+
+model OtpChallenge {
+  id        String   @id @default(cuid())
+  phone     String
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String  @default("Home")
+  name      String
+  phone     String
+  line1     String
+  line2     String  @default("")
+  landmark  String  @default("")
+  city      String
+  pincode   String
+  isDefault Boolean @default(true)
+}
+
+model SellerCategory {
+  id                 String   @id @default(cuid())
+  name               String
+  slug               String   @unique
+  description        String   @default("")
+  commissionPercent  Decimal  @default(15.00) @db.Decimal(5, 2)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  sellers            Seller[]
+}
+
+model Seller {
+  id                    String          @id @default(cuid())
+  shopName              String
+  ownerName             String
+  phone                 String
+  email                 String          @default("")
+  city                  String          @default("")
+  pincode               String          @default("")
+  address               String          @default("") @db.VarChar(2000)
+  lat                   Float?
+  lng                   Float?
+  gstNumber             String          @default("")
+  pan                   String          @default("")
+  status                String          @default("active")
+  passwordHash          String          @default("")
+  commissionPercent     Decimal?        @db.Decimal(5, 2)
+  sellerCategoryId      String
+  sellerCategory        SellerCategory  @relation(fields: [sellerCategoryId], references: [id])
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  products              Product[]
+  orderItems            OrderItem[]
+  commissions           Commission[]
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  tagline   String    @default("")
+  emoji     String    @default("")
+  tint      String    @default("from-blue-50 to-orange-50")
+  kind      String    @default("product")
+  sortOrder Int       @default(0)
+  products  Product[]
+}
+
+model Product {
+  id                 String    @id @default(cuid())
+  slug               String    @unique
+  name               String
+  unit               String    @default("1 pc")
+  price              Int
+  mrp                Int?
+  blurb              String    @default("") @db.VarChar(2000)
+  image              String    @default("")
+  emoji              String    @default("")
+  tags               String    @default("")
+  kind               String    @default("product")
+  etaMinutes         Int       @default(15)
+  stock              Int       @default(100)
+  active             Boolean   @default(true)
+  commissionPercent  Decimal?  @db.Decimal(5, 2)
+  categoryId         String
+  category           Category  @relation(fields: [categoryId], references: [id])
+  sellerId           String
+  seller             Seller    @relation(fields: [sellerId], references: [id])
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  orderItems         OrderItem[]
+
+  @@index([categoryId])
+  @@index([sellerId])
+  @@index([active])
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id])
+  status            String      @default("pending")
+  fulfillment       String      @default("delivery")
+  subtotal          Int
+  deliveryFee       Int
+  total             Int
+  currency          String      @default("INR")
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  addressJson       String      @default("") @db.VarChar(4000)
+  etaMinutes        Int         @default(15)
+  createdAt         DateTime    @default(now())
+  items             OrderItem[]
+  commissions       Commission[]
+}
+
+model OrderItem {
+  id                 String    @id @default(cuid())
+  orderId            String
+  order              Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId          String
+  product            Product?  @relation(fields: [productId], references: [id])
+  sellerId           String?
+  seller             Seller?   @relation(fields: [sellerId], references: [id])
+  name               String
+  qty                Int
+  price              Int
+  image              String    @default("")
+  kind               String    @default("product")
+  commissionPercent  Decimal   @default(0) @db.Decimal(5, 2)
+  commissionAmount   Int       @default(0)
+}
+
+model Commission {
+  id                 String   @id @default(cuid())
+  orderId            String
+  order              Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sellerId           String
+  seller             Seller   @relation(fields: [sellerId], references: [id])
+  orderItemId        String
+  gross              Int
+  commissionPercent  Decimal  @db.Decimal(5, 2)
+  commissionAmount   Int
+  sellerEarning      Int
+  status             String   @default("accrued")
+  createdAt          DateTime @default(now())
+
+  @@index([sellerId])
+  @@index([status])
+}
+
+model AppSetting {
+  key       String   @id
+  value     String   @db.Text
+  secret    Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+}

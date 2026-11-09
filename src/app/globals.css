@@ -3,19 +3,47 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbfbfd;
+  --foreground: #1d1d1f;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(1000px 450px at 50% -10%, rgba(255, 107, 0, 0.04), transparent 60%),
+    radial-gradient(800px 400px at 95% 5%, rgba(0, 113, 227, 0.03), transparent 50%),
+    var(--background);
+  font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  letter-spacing: -0.011em;
+}
+
+.font-display {
+  font-family: var(--font-jakarta), -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  letter-spacing: -0.028em;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex h-11 items-center justify-center rounded-full bg-zk-orange px-6 text-sm font-semibold text-white shadow-[0_2px_10px_-1px_rgba(255,106,26,0.45)] ring-1 ring-white/20 transition-all duration-200 hover:bg-zk-ember hover:shadow-[0_4px_16px_-1px_rgba(255,106,26,0.55)] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zk-orange;
+  }
+  .btn-navy {
+    @apply inline-flex h-11 items-center justify-center rounded-full bg-zk-navy px-6 text-sm font-semibold text-white shadow-[0_2px_10px_-2px_rgba(11,31,74,0.3)] ring-1 ring-white/10 transition-all duration-200 hover:bg-zk-blue hover:shadow-[0_4px_16px_-2px_rgba(22,58,140,0.4)] active:scale-[0.98];
+  }
+  .input {
+    @apply mt-1 h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-normal text-slate-800 outline-none transition duration-150 focus:border-zk-blue focus:ring-2 focus:ring-zk-blue/20;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
